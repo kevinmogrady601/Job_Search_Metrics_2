@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search Metrics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .charts-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-3px);
+        }
+
+        .chart-container h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .chart-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .table-container h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .analysis-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .analysis-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .insight-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-left: 4px solid #3498db;
+            margin-bottom: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .insight-item h4 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .insight-item p {
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                min-width: auto;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-closed { background-color: #e74c3c; }
+        .status-open { background-color: #27ae60; }
+        .status-unknown { background-color: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Job Search Metrics Dashboard</h1>
+            <p>Comprehensive analysis of job applications, interviews, and position tracking</p>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value">106</div>
+                <div class="metric-label">Total Applications</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">92</div>
+                <div class="metric-label">Unique Companies</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">11</div>
+                <div class="metric-label">Interviews Secured</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">10.4%</div>
+                <div class="metric-label">Interview Rate</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">17</div>
+                <div class="metric-label">Recruiter Contacts</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">2.53</div>
+                <div class="metric-label">Avg Quality Score</div>
+            </div>
+        </div>
+
+        <!-- Position Status Metrics -->
+        <div class="section-title">
+            <h2>Position Status Overview</h2>
+        </div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value" style="color: #e74c3c;">15</div>
+                <div class="metric-label">
+                    <span class="status-indicator status-closed"></span>Closed Positions (14.2%)
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: #27ae60;">7</div>
+                <div class="metric-label">
+                    <span class="status-indicator status-open"></span>Open Positions (6.6%)
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: #f39c12;">84</div>
+                <div class="metric-label">
+                    <span class="status-indicator status-unknown"></span>Unknown Status (79.2%)
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="section-title">
+                <h2>Visualizations & Trends</h2>
+            </div>
+            
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <h3>Applications Over Time</h3>
+                    <img src="applications_over_time.png" alt="Applications Over Time Chart">
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Quality Distribution</h3>
+                    <img src="quality_distribution.png" alt="Quality Distribution Chart">
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Interviews Per Month</h3>
+                    <img src="interviews_per_month.png" alt="Interviews Per Month Chart">
+                </div>
+                
+                <div class="chart-container">
+                    <h3>High Quality Interviews Per Month</h3>
+                    <img src="high_quality_interviews_per_month.png" alt="High Quality Interviews Per Month Chart">
+                </div>
+                
+                <div class="chart-container">
+                    <h3>Position Status Distribution</h3>
+                    <img src="closed_positions_distribution.png" alt="Closed Positions Distribution Chart">
+                </div>
+            </div>
+        </div>
+
+        <!-- High Quality Interview Table -->
+        <div class="table-container">
+            <h3>High Quality Positions with Interviews</h3>
+            <img src="high_quality_interview_table.png" alt="High Quality Interview Table" style="width: 100%; height: auto;">
+        </div>
+
+        <!-- Key Insights Section -->
+        <div class="analysis-section">
+            <h3>Key Insights & Analysis</h3>
+            
+            <div class="insight-item">
+                <h4>Interview Success by Quality</h4>
+                <p><strong>Quality 1:</strong> 33.3% interview rate | <strong>Quality 2:</strong> 15.0% interview rate | <strong>Quality 3:</strong> 4.2% interview rate</p>
+            </div>
+            
+            <div class="insight-item">
+                <h4>Recruiter Impact</h4>
+                <p>Applications with recruiter involvement have a <strong>64.7%</strong> interview rate compared to <strong>0.0%</strong> without recruiters, highlighting the critical importance of networking and recruiter relationships.</p>
+            </div>
+            
+            <div class="insight-item">
+                <h4>Position Closure Patterns</h4>
+                <p>Position closure analysis shows 15 confirmed closed positions (14.2%) out of 106 total applications. Most positions (79.2%) still have unknown status, indicating potential for future developments.</p>
+            </div>
+            
+            <div class="insight-item">
+                <h4>Geographic Distribution</h4>
+                <p><strong>Remote positions:</strong> 13 applications | <strong>Local positions:</strong> 27 applications. Strategic focus on location preferences can optimize application success.</p>
+            </div>
+            
+            <div class="insight-item">
+                <h4>Market Activity</h4>
+                <p>With <strong>79.2%</strong> of positions still having unknown status, there's significant potential for future developments. The data shows consistent application activity with strategic focus on higher-quality opportunities.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Dashboard generated from job search data analysis | Last updated: <span id="lastUpdated"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Set the last updated date
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+        
+        // Add smooth scrolling for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add loading animation for images
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('load', function() {
+                this.style.opacity = '1';
+                this.style.transform = 'scale(1)';
+            });
+            
+            img.style.opacity = '0';
+            img.style.transform = 'scale(0.95)';
+            img.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        });
+    </script>
+</body>
+</html>
